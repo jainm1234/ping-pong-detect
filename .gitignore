@@ -2,16 +2,7 @@
 __pycache__/
 *.py[cod]
 .DS_Store
-.idea/
-.vscode/
-
 Log/
 *.log
-
-data/processed/*
-!data/processed/.gitkeep
-runs/*
-!runs/.gitkeep
-
+runs/
 *.pt
-*.onnx

@@ -74,7 +74,7 @@ def main():
                     values = values[values <= near * 1.15]
                     cv2.putText(
                         frame,
-                        str(int(np.median(values))),
+                        f"{int(np.median(values))} mm",
                         (x1, max(y1 - 8, 16)),
                         cv2.FONT_HERSHEY_SIMPLEX,
                         0.6,

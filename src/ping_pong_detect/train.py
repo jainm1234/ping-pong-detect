@@ -20,7 +20,7 @@ def main():
         device=device,
         workers=2,
         project=str(ROOT / "runs"),
-        name="ball4",
+        name="orange",
         exist_ok=False,
     )
 

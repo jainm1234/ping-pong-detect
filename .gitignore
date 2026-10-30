@@ -8,11 +8,14 @@ Log/
 *.log
 
 data/processed/
+data/backgrounds/commons/
+data/backgrounds/faces/
 runs/*
-!runs/ball/
-runs/ball/*
-!runs/ball/weights/
-runs/ball/weights/*
+!runs/*/
+runs/*/*
+!runs/*/weights/
+runs/*/weights/*
+runs/preview/
 *.pt
-!runs/ball/weights/best.pt
+!runs/*/weights/best.pt
 *.onnx

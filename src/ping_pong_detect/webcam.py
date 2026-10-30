@@ -14,7 +14,7 @@ from pyorbbecsdk import (
 from ultralytics import YOLO
 
 ROOT = Path(__file__).resolve().parents[2]
-MODEL = ROOT / "runs" / "ball4" / "weights" / "best.pt"
+MODEL = ROOT / "runs" / "orange" / "weights" / "best.pt"
 
 
 def main():
@@ -56,6 +56,8 @@ def main():
             if color is None or depth is None:
                 continue
             frame = cv2.imdecode(np.asanyarray(color.get_data()), cv2.IMREAD_COLOR)
+            if frame is None:
+                continue
             raw = np.frombuffer(depth.get_data(), dtype=np.uint16)
             raw = raw.reshape(depth.get_height(), depth.get_width()).astype(np.float32)
             raw *= depth.get_depth_scale()

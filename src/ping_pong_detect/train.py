@@ -11,7 +11,12 @@ def main():
     if not (DATA / "data.yaml").exists():
         print("No dataset at", DATA)
         return
-    device = "mps" if torch.backends.mps.is_available() else "cpu"
+    if torch.cuda.is_available():
+        device = 0
+    elif torch.backends.mps.is_available():
+        device = "mps"
+    else:
+        device = "cpu"
     YOLO("yolo11s.pt").train(
         data=str(DATA / "data.yaml"),
         epochs=40,
@@ -21,7 +26,6 @@ def main():
         workers=2,
         project=str(ROOT / "runs"),
         name="orange",
-        exist_ok=False,
     )
 
 

@@ -8,8 +8,6 @@ Log/
 *.log
 
 data/processed/
-data/backgrounds/commons/
-data/backgrounds/faces/
 runs/*
 !runs/*/
 runs/*/*

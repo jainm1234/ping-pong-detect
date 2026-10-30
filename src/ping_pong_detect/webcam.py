@@ -14,7 +14,7 @@ from pyorbbecsdk import (
 from ultralytics import YOLO
 
 ROOT = Path(__file__).resolve().parents[2]
-MODEL = ROOT / "runs" / "ball" / "weights" / "best.pt"
+MODEL = ROOT / "runs" / "ball4" / "weights" / "best.pt"
 
 
 def main():
@@ -64,10 +64,11 @@ def main():
             if boxes is not None and len(boxes):
                 best = int(boxes.conf.argmax())
                 x1, y1, x2, y2 = (int(v) for v in boxes.xyxy[best].tolist())
-                center = ((x1 + x2) // 2, (y1 + y2) // 2)
-                radius = max(x2 - x1, y2 - y1) // 2
-                cv2.circle(frame, center, max(radius, 1), (0, 255, 0), 2)
-                values = raw[max(y1, 0) : y2, max(x1, 0) : x2]
+                cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
+                cv2.drawMarker(frame, (cx, cy), (0, 255, 0), cv2.MARKER_CROSS, 12, 2)
+                y0, y3 = max(cy - 4, 0), min(cy + 5, raw.shape[0])
+                x0, x3 = max(cx - 4, 0), min(cx + 5, raw.shape[1])
+                values = raw[y0:y3, x0:x3]
                 values = values[values > 0]
                 if values.size:
                     near = np.percentile(values, 10)
@@ -75,7 +76,7 @@ def main():
                     cv2.putText(
                         frame,
                         f"{int(np.median(values))} mm",
-                        (x1, max(y1 - 8, 16)),
+                        (cx + 8, max(cy - 8, 16)),
                         cv2.FONT_HERSHEY_SIMPLEX,
                         0.6,
                         (0, 255, 0),

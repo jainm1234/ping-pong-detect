@@ -20,13 +20,12 @@ SHEETS = ["orange_balls_a.jpg", "orange_balls_b.jpg", "orange_balls_c.jpg", "ora
 # (share, smallest diameter, largest diameter) in output pixels
 SIZE_CLASSES = [(0.32, 12, 30), (0.36, 30, 100), (0.24, 100, 260), (0.08, 260, 560)]
 DISTRACTORS = {
-    "light": 0.22,
-    "face": 0.24,
-    "clock": 0.12,
-    "sign": 0.14,
-    "plate": 0.1,
-    "wheel": 0.1,
-    "button": 0.08,
+    "light": 0.28,
+    "clock": 0.16,
+    "sign": 0.2,
+    "plate": 0.13,
+    "wheel": 0.13,
+    "button": 0.1,
 }
 
 
@@ -242,58 +241,58 @@ def render_flat(rng, size, kind):
     n = max(32, size * 2)
     c = n // 2
     r = int(n * 0.48)
-    face = np.zeros((n, n, 3), np.float32)
+    canvas = np.zeros((n, n, 3), np.float32)
     if kind == "sign":
         if rng.random() < 0.55:
             red = hsv_bgr(rng.uniform(175, 180), rng.uniform(200, 250), rng.uniform(170, 230))
-            cv2.circle(face, (c, c), r, red.tolist(), -1, cv2.LINE_AA)
+            cv2.circle(canvas, (c, c), r, red.tolist(), -1, cv2.LINE_AA)
             if rng.random() < 0.5:
-                cv2.rectangle(face, (int(c - r * 0.62), int(c - r * 0.16)), (int(c + r * 0.62), int(c + r * 0.16)), (0.95, 0.95, 0.95), -1)
+                cv2.rectangle(canvas, (int(c - r * 0.62), int(c - r * 0.16)), (int(c + r * 0.62), int(c + r * 0.16)), (0.95, 0.95, 0.95), -1)
             else:
-                cv2.circle(face, (c, c), int(r * 0.78), (0.95, 0.95, 0.95), -1, cv2.LINE_AA)
+                cv2.circle(canvas, (c, c), int(r * 0.78), (0.95, 0.95, 0.95), -1, cv2.LINE_AA)
                 label = str(rng.choice(["20", "30", "40", "50", "60", "P"]))
                 scale = n / 90
                 (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_DUPLEX, scale, max(1, n // 40))
-                cv2.putText(face, label, (c - tw // 2, c + th // 2), cv2.FONT_HERSHEY_DUPLEX, scale, (0.05, 0.05, 0.05), max(1, n // 40), cv2.LINE_AA)
+                cv2.putText(canvas, label, (c - tw // 2, c + th // 2), cv2.FONT_HERSHEY_DUPLEX, scale, (0.05, 0.05, 0.05), max(1, n // 40), cv2.LINE_AA)
         else:
-            cv2.circle(face, (c, c), r, hsv_bgr(rng.uniform(105, 115), 230, rng.uniform(150, 210)).tolist(), -1, cv2.LINE_AA)
-            cv2.circle(face, (c, c), int(r * 0.93), (0.95, 0.95, 0.95), max(1, n // 50), cv2.LINE_AA)
+            cv2.circle(canvas, (c, c), r, hsv_bgr(rng.uniform(105, 115), 230, rng.uniform(150, 210)).tolist(), -1, cv2.LINE_AA)
+            cv2.circle(canvas, (c, c), int(r * 0.93), (0.95, 0.95, 0.95), max(1, n // 50), cv2.LINE_AA)
             tip, tail = (c, int(c - r * 0.6)), (c, int(c + r * 0.6))
-            cv2.arrowedLine(face, tail, tip, (0.95, 0.95, 0.95), max(2, n // 12), cv2.LINE_AA, tipLength=0.4)
+            cv2.arrowedLine(canvas, tail, tip, (0.95, 0.95, 0.95), max(2, n // 12), cv2.LINE_AA, tipLength=0.4)
     elif kind == "plate":
         base = rng.choice([[0.95, 0.95, 0.95], [0.85, 0.9, 0.93], [0.7, 0.8, 0.6], [0.8, 0.65, 0.6], [0.3, 0.3, 0.3]])
-        cv2.circle(face, (c, c), r, (np.array(base) * 0.9).tolist(), -1, cv2.LINE_AA)
-        cv2.circle(face, (c, c), int(r * 0.68), np.array(base).tolist(), -1, cv2.LINE_AA)
+        cv2.circle(canvas, (c, c), r, (np.array(base) * 0.9).tolist(), -1, cv2.LINE_AA)
+        cv2.circle(canvas, (c, c), int(r * 0.68), np.array(base).tolist(), -1, cv2.LINE_AA)
         if rng.random() < 0.4:
-            cv2.circle(face, (c, c), int(r * 0.9), hsv_bgr(rng.choice([60, 100, 120, 150]), 160, 160).tolist(), max(1, n // 60), cv2.LINE_AA)
+            cv2.circle(canvas, (c, c), int(r * 0.9), hsv_bgr(rng.choice([60, 100, 120, 150]), 160, 160).tolist(), max(1, n // 60), cv2.LINE_AA)
     elif kind == "wheel":
-        cv2.circle(face, (c, c), r, (0.07, 0.07, 0.07), -1, cv2.LINE_AA)
+        cv2.circle(canvas, (c, c), r, (0.07, 0.07, 0.07), -1, cv2.LINE_AA)
         rim = float(rng.uniform(0.45, 0.8))
-        cv2.circle(face, (c, c), int(r * 0.62), (rim, rim, rim), -1, cv2.LINE_AA)
+        cv2.circle(canvas, (c, c), int(r * 0.62), (rim, rim, rim), -1, cv2.LINE_AA)
         spokes = int(rng.integers(5, 9))
         start = rng.uniform(0, 2 * math.pi)
         for k in range(spokes):
             angle = start + k * 2 * math.pi / spokes
             hole = (int(c + r * 0.38 * math.cos(angle)), int(c + r * 0.38 * math.sin(angle)))
-            cv2.circle(face, hole, max(1, int(r * 0.13)), (0.1, 0.1, 0.1), -1, cv2.LINE_AA)
-        cv2.circle(face, (c, c), max(1, int(r * 0.14)), (rim * 0.7,) * 3, -1, cv2.LINE_AA)
+            cv2.circle(canvas, hole, max(1, int(r * 0.13)), (0.1, 0.1, 0.1), -1, cv2.LINE_AA)
+        cv2.circle(canvas, (c, c), max(1, int(r * 0.14)), (rim * 0.7,) * 3, -1, cv2.LINE_AA)
     else:
         hue = float(rng.choice([60, 90, 110, 125, 145, 165]))
         color = hsv_bgr(hue, rng.uniform(0, 230), rng.uniform(40, 240))
-        cv2.circle(face, (c, c), r, color.tolist(), -1, cv2.LINE_AA)
-        cv2.circle(face, (c, c), int(r * 0.85), (color * 0.8).tolist(), max(1, n // 40), cv2.LINE_AA)
+        cv2.circle(canvas, (c, c), r, color.tolist(), -1, cv2.LINE_AA)
+        cv2.circle(canvas, (c, c), int(r * 0.85), (color * 0.8).tolist(), max(1, n // 40), cv2.LINE_AA)
         holes = int(rng.choice([2, 4]))
         for k in range(holes):
             angle = k * 2 * math.pi / holes + math.pi / 4
             hole = (int(c + r * 0.25 * math.cos(angle)), int(c + r * 0.25 * math.sin(angle)))
-            cv2.circle(face, hole, max(1, int(r * 0.08)), (color * 0.35).tolist(), -1, cv2.LINE_AA)
+            cv2.circle(canvas, hole, max(1, int(r * 0.08)), (color * 0.35).tolist(), -1, cv2.LINE_AA)
     alpha = np.zeros((n, n), np.float32)
     cv2.circle(alpha, (c, c), r, 1.0, -1, cv2.LINE_AA)
     yy = np.linspace(1, 0, n, dtype=np.float32)[:, None]
-    face *= (rng.uniform(0.75, 0.9) + rng.uniform(0.1, 0.25) * yy)[..., None]
-    face *= 1 + grain(rng, n, max(0.5, n * 0.01), 0.03)[..., None]
+    canvas *= (rng.uniform(0.75, 0.9) + rng.uniform(0.1, 0.25) * yy)[..., None]
+    canvas *= 1 + grain(rng, n, max(0.5, n * 0.01), 0.03)[..., None]
     squash = rng.uniform(0.4, 1.0) if kind in ("plate", "wheel") else rng.uniform(0.7, 1.0)
-    return finish(face, alpha, size, max(4, int(size * squash)))
+    return finish(canvas, alpha, size, max(4, int(size * squash)))
 
 
 def render_clock(rng, size):
@@ -318,25 +317,6 @@ def render_clock(rng, size):
     face *= (0.8 + 0.2 * yy)[..., None]
     squash = rng.uniform(0.55, 1.0)
     return finish(face, alpha, max(4, int(size * squash)), size)
-
-
-def load_faces():
-    faces = []
-    for path in sorted((BG / "faces").glob("*.png")):
-        image = cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
-        if image is not None and image.shape[2] == 4:
-            faces.append((image[..., :3].astype(np.float32) / 255, image[..., 3].astype(np.float32) / 255))
-    return faces
-
-
-def render_face(rng, size, faces):
-    if not faces:
-        return render_clock(rng, size)
-    color, alpha = faces[int(rng.integers(len(faces)))]
-    h, w = color.shape[:2]
-    if rng.random() < 0.5:
-        color, alpha = color[:, ::-1], alpha[:, ::-1]
-    return finish(np.ascontiguousarray(color), np.ascontiguousarray(alpha), max(4, int(size * w / h)), size)
 
 
 def line_kernel(length, angle):
@@ -524,15 +504,13 @@ def make_ball(rng, size, sprites):
     return render_orange(rng, size)
 
 
-def make_distractor(rng, kind, size, faces):
-    if kind in ("sign", "plate", "wheel", "button"):
-        return render_flat(rng, size, kind)
+def make_distractor(rng, kind, size):
     if kind == "clock":
         return render_clock(rng, size)
-    return render_face(rng, size, faces)
+    return render_flat(rng, size, kind)
 
 
-def add_distractors(rng, image, count, taken, faces, light_top=None):
+def add_distractors(rng, image, count, taken, light_top=None):
     kinds = list(DISTRACTORS)
     weights = np.array([DISTRACTORS[k] for k in kinds])
     for _ in range(count):
@@ -550,7 +528,7 @@ def add_distractors(rng, image, count, taken, faces, light_top=None):
             add_light(rng, image, x, y, min(24, max(5, size * 0.12)))
             continue
         size = int(round(size))
-        color, alpha = make_distractor(rng, kind, size, faces)
+        color, alpha = make_distractor(rng, kind, size)
         color = match_light(rng, image, color, x, y, size)
         if rng.random() < 0.25:
             color, alpha = motion_blur(color, alpha, min(50, max(3, size * rng.uniform(0.2, 1.0))), rng.uniform(0, 180))
@@ -587,7 +565,7 @@ def camera(rng, image):
     return cv2.imdecode(encoded, cv2.IMREAD_COLOR)
 
 
-def make_image(rng, entry, sprites, faces):
+def make_image(rng, entry, sprites):
     image, surface = background(rng, entry)
     empty = rng.random() < 0.1
     balls = 0 if empty else int(rng.choice([1, 2, 3], p=[0.75, 0.18, 0.07]))
@@ -617,7 +595,7 @@ def make_image(rng, entry, sprites, faces):
         taken.append((x, y, size))
         plans.append((x, y, size, ground))
     light_top = min(surface[0][2][1], surface[0][3][1]) - 20 if surface else None
-    add_distractors(rng, image, distractors, taken, faces, light_top)
+    add_distractors(rng, image, distractors, taken, light_top)
     boxes = []
     for x, y, size, ground in plans:
         side = max(MIN_SIDE, int(round(size)))
@@ -691,7 +669,7 @@ def pov_spot(rng, homography):
     return None
 
 
-def make_pov_image(rng, entry, sprites, faces):
+def make_pov_image(rng, entry, sprites):
     image, homography = pov_background(rng, entry)
     empty = rng.random() < 0.08
     balls = 0 if empty else int(rng.choice([1, 2], p=[0.88, 0.12]))
@@ -707,7 +685,7 @@ def make_pov_image(rng, entry, sprites, faces):
         taken.append((x, y, size))
         plans.append(spot)
     far_y = min(project(homography, 0, TABLE_L)[1], project(homography, TABLE_W, TABLE_L)[1])
-    add_distractors(rng, image, int(rng.choice([0, 1], p=[0.75, 0.25])) if not empty else 1, taken, faces, far_y - 20)
+    add_distractors(rng, image, int(rng.choice([0, 1], p=[0.75, 0.25])) if not empty else 1, taken, far_y - 20)
     boxes = []
     for x, y, size, ground, lift, toward in plans:
         side = max(MIN_SIDE, int(round(size)))
@@ -758,11 +736,11 @@ def output_folders(split, group):
     return folders
 
 
-def write_group(rng, split, group, make, entries, pool, faces):
+def write_group(rng, split, group, make, entries, pool):
     out_images, out_labels = output_folders(split, group)
     count, total = COUNTS[group][split], 0
     for i in range(count):
-        image, lines = make(rng, entries[int(rng.integers(len(entries)))], pool, faces)
+        image, lines = make(rng, entries[int(rng.integers(len(entries)))], pool)
         name = f"{group}_{i:04d}"
         cv2.imwrite(str(out_images / f"{name}.jpg"), image, [cv2.IMWRITE_JPEG_QUALITY, 92])
         (out_labels / f"{name}.txt").write_text("".join(lines))
@@ -773,13 +751,12 @@ def write_group(rng, split, group, make, entries, pool, faces):
 
 def main():
     sprites = cut_sheets()
-    faces = load_faces()
-    print(f"photo balls {len(sprites)} faces {len(faces)}")
+    print(f"photo balls {len(sprites)}")
     for split, seed in SEEDS.items():
         rng = np.random.default_rng(seed)
         pool = [s for i, s in enumerate(sprites) if is_orange(s) and (i % 4 == 3) == (split == "val")]
-        write_group(rng, split, "orange", make_image, load_backgrounds(split), pool, faces)
-        write_group(rng, split, "pov", make_pov_image, load_pov(split), pool, faces)
+        write_group(rng, split, "orange", make_image, load_backgrounds(split), pool)
+        write_group(rng, split, "pov", make_pov_image, load_pov(split), pool)
     for cache in (DATA / "labels").rglob("*.cache"):
         cache.unlink()
 
